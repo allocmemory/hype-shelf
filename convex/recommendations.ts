@@ -82,6 +82,10 @@ export const getAllRecommendations = query({
   },
 });
 
+const MAX_TITLE_LENGTH = 200;
+const MAX_BLURB_LENGTH = 1000;
+const MAX_LINK_LENGTH = 2000;
+
 export const addRecommendation = mutation({
   args: {
     title: v.string(),
@@ -91,6 +95,17 @@ export const addRecommendation = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
+
+    // Server-side length validation
+    if (args.title.length === 0 || args.title.length > MAX_TITLE_LENGTH) {
+      throw new ConvexError(`Title must be 1-${MAX_TITLE_LENGTH} characters`);
+    }
+    if (args.blurb.length === 0 || args.blurb.length > MAX_BLURB_LENGTH) {
+      throw new ConvexError(`Blurb must be 1-${MAX_BLURB_LENGTH} characters`);
+    }
+    if (args.link.length === 0 || args.link.length > MAX_LINK_LENGTH) {
+      throw new ConvexError(`Link must be 1-${MAX_LINK_LENGTH} characters`);
+    }
 
     const recId = await ctx.db.insert("recommendations", {
       userId: user._id,

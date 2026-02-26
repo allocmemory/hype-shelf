@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 
 export const getOrCreateUser = mutation({
@@ -8,6 +8,16 @@ export const getOrCreateUser = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError("Unauthenticated");
+    }
+
+    // Verify the clerkId matches the authenticated user's identity
+    if (identity.subject !== args.clerkId) {
+      throw new ConvexError("Unauthorized: clerkId mismatch");
+    }
+
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
@@ -43,5 +53,22 @@ export const getCurrentUser = query({
       .unique();
 
     return user;
+  },
+});
+
+export const getCurrentUserRole = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    return user?.role ?? null;
   },
 });
