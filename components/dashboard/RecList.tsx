@@ -8,12 +8,15 @@ import { RecCard } from "./RecCard";
 import type { Genre, CurrentUser, RecommendationWithUser } from "@/types";
 
 type RecListProps = {
-  currentUser: CurrentUser;
+  currentUser: NonNullable<CurrentUser>;
 };
 
 export function RecList({ currentUser }: RecListProps) {
   const [genre, setGenre] = useState<Genre | undefined>(undefined);
-  const recommendations = useQuery(api.recommendations.getAllRecommendations, { genre });
+  const recommendations = useQuery(
+    api.recommendations.getAllRecommendations,
+    currentUser ? { genre } : "skip"
+  );
 
   if (recommendations === undefined) {
     return <div className="text-gray-500 text-center py-8">Loading recommendations...</div>;

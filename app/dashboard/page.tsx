@@ -22,7 +22,7 @@ export default function DashboardPage() {
     }
   }, [isLoaded, user, getOrCreateUser]);
 
-  if (!isLoaded || currentUser === undefined) {
+  if (!isLoaded || currentUser === undefined || currentUser === null) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="text-gray-500 text-center">Loading...</div>
