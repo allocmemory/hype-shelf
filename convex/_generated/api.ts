@@ -5,13 +5,21 @@
  * For information on working with generated files, see the Convex docs.
  */
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
-import type * as recommendations from "../recommendations.js";
-import type * as users from "../users.js";
+import { anyApi, type FunctionReference } from "convex/server";
+
+type ApiType = {
+  recommendations: {
+    getPublicRecommendations: FunctionReference<"query">;
+    getAllRecommendations: FunctionReference<"query">;
+    addRecommendation: FunctionReference<"mutation">;
+    deleteRecommendation: FunctionReference<"mutation">;
+    setStaffPick: FunctionReference<"mutation">;
+  };
+  users: {
+    getOrCreateUser: FunctionReference<"mutation">;
+    getCurrentUser: FunctionReference<"query">;
+  };
+};
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -21,15 +29,6 @@ import type * as users from "../users.js";
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-declare const fullApi: ApiFromModules<{
-  recommendations: typeof recommendations;
-  users: typeof users;
-}>;
-export declare const api: FilterApi<
-  typeof fullApi,
-  FunctionReference<"action" | "mutation" | "query", "public">
->;
-export declare const internal: FilterApi<
-  typeof fullApi,
-  FunctionReference<"action" | "mutation" | "query", "internal">
->;
+export const api = anyApi as unknown as ApiType;
+
+export const internal = anyApi;

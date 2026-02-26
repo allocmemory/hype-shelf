@@ -25,7 +25,7 @@ export function PublicRecList() {
 
   return (
     <div className="space-y-4">
-      {recommendations.map((rec: PublicRecommendation) => (
+      {(recommendations as PublicRecommendation[]).map((rec) => (
         <div
           key={String(rec._id)}
           className="border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"

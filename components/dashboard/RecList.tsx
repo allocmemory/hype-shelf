@@ -5,7 +5,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { GenreFilter } from "./GenreFilter";
 import { RecCard } from "./RecCard";
-import type { Genre, CurrentUser } from "@/types";
+import type { Genre, CurrentUser, RecommendationWithUser } from "@/types";
 
 type RecListProps = {
   currentUser: CurrentUser;
@@ -31,7 +31,7 @@ export function RecList({ currentUser }: RecListProps) {
         </div>
       ) : (
         <div className="space-y-4">
-          {recommendations.map((rec) => (
+          {(recommendations as RecommendationWithUser[]).map((rec) => (
             <RecCard key={rec._id} recommendation={rec} currentUser={currentUser} />
           ))}
         </div>
