@@ -4,48 +4,48 @@ import { GenreFilter } from "../GenreFilter";
 import { GENRES } from "@/types";
 
 describe("GenreFilter", () => {
-  it("renders all genre options plus 'All genres'", () => {
+  it("renders all genre buttons plus 'All'", () => {
     const onChange = vi.fn();
     render(<GenreFilter value={undefined} onChange={onChange} />);
 
-    const select = screen.getByRole("combobox", { name: /filter by genre/i });
-    expect(select).toBeInTheDocument();
+    const group = screen.getByRole("group", { name: /filter by genre/i });
+    expect(group).toBeInTheDocument();
 
-    const options = screen.getAllByRole("option");
-    expect(options).toHaveLength(GENRES.length + 1);
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(GENRES.length + 1);
 
-    expect(screen.getByRole("option", { name: "All genres" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
     GENRES.forEach((genre) => {
-      const capitalizedGenre = genre.charAt(0).toUpperCase() + genre.slice(1);
-      expect(screen.getByRole("option", { name: capitalizedGenre })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: genre })).toBeInTheDocument();
     });
   });
 
-  it("calls onChange with undefined when 'All genres' is selected", () => {
+  it("calls onChange with undefined when 'All' is clicked", () => {
     const onChange = vi.fn();
     render(<GenreFilter value="action" onChange={onChange} />);
 
-    const select = screen.getByRole("combobox", { name: /filter by genre/i });
-    fireEvent.change(select, { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "All" }));
 
     expect(onChange).toHaveBeenCalledWith(undefined);
   });
 
-  it("calls onChange with genre when a specific genre is selected", () => {
+  it("calls onChange with genre when a specific genre is clicked", () => {
     const onChange = vi.fn();
     render(<GenreFilter value={undefined} onChange={onChange} />);
 
-    const select = screen.getByRole("combobox", { name: /filter by genre/i });
-    fireEvent.change(select, { target: { value: "horror" } });
+    fireEvent.click(screen.getByRole("button", { name: "horror" }));
 
     expect(onChange).toHaveBeenCalledWith("horror");
   });
 
-  it("displays the selected genre value", () => {
+  it("highlights the selected genre button", () => {
     const onChange = vi.fn();
     render(<GenreFilter value="comedy" onChange={onChange} />);
 
-    const select = screen.getByRole("combobox", { name: /filter by genre/i }) as HTMLSelectElement;
-    expect(select.value).toBe("comedy");
+    const comedyButton = screen.getByRole("button", { name: "comedy" });
+    expect(comedyButton).toHaveClass("bg-blue-600");
+
+    const allButton = screen.getByRole("button", { name: "All" });
+    expect(allButton).not.toHaveClass("bg-blue-600");
   });
 });

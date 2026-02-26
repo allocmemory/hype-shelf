@@ -24,8 +24,8 @@ export function RecList({ currentUser }: RecListProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-lg">All Recommendations</h2>
+      <div className="mb-4">
+        <h2 className="font-semibold text-lg mb-3">All Recommendations</h2>
         <GenreFilter value={genre} onChange={setGenre} />
       </div>
       {recommendations.length === 0 ? (

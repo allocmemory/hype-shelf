@@ -10,20 +10,30 @@ type GenreFilterProps = {
 
 export function GenreFilter({ value, onChange }: GenreFilterProps) {
   return (
-    <select
-      value={value ?? ""}
-      onChange={(e) =>
-        onChange(e.target.value === "" ? undefined : (e.target.value as Genre))
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      aria-label="Filter by genre"
-    >
-      <option value="">All genres</option>
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by genre">
+      <button
+        onClick={() => onChange(undefined)}
+        className={`px-3 py-1 text-sm rounded-full transition-colors ${
+          value === undefined
+            ? "bg-blue-600 text-white"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }`}
+      >
+        All
+      </button>
       {GENRES.map((genre) => (
-        <option key={genre} value={genre}>
-          {genre.charAt(0).toUpperCase() + genre.slice(1)}
-        </option>
+        <button
+          key={genre}
+          onClick={() => onChange(genre)}
+          className={`px-3 py-1 text-sm rounded-full capitalize transition-colors ${
+            value === genre
+              ? "bg-blue-600 text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+        >
+          {genre}
+        </button>
       ))}
-    </select>
+    </div>
   );
 }

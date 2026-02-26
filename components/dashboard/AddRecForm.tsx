@@ -12,6 +12,7 @@ export function AddRecForm() {
   const [link, setLink] = useState("");
   const [blurb, setBlurb] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const addRecommendation = useMutation(api.recommendations.addRecommendation);
 
@@ -31,6 +32,8 @@ export function AddRecForm() {
       setGenre("other");
       setLink("");
       setBlurb("");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
     } finally {
       setIsSubmitting(false);
     }
@@ -39,6 +42,11 @@ export function AddRecForm() {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-4">
       <h2 className="font-semibold text-lg mb-4">Add a Recommendation</h2>
+      {showSuccess && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg">
+          Added successfully!
+        </div>
+      )}
       <div className="space-y-4">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
