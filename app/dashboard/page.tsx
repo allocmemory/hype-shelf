@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -9,23 +9,36 @@ import { RecList } from "@/components/dashboard/RecList";
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
+  const [userSynced, setUserSynced] = useState(false);
   const getOrCreateUser = useMutation(api.users.getOrCreateUser);
   const currentUser = useQuery(api.users.getCurrentUser);
 
   useEffect(() => {
-    if (isLoaded && user) {
-      getOrCreateUser({
-        clerkId: user.id,
-        email: user.primaryEmailAddress?.emailAddress ?? "",
-        name: user.fullName ?? user.firstName ?? "Anonymous",
-      });
+    async function syncUser() {
+      if (isLoaded && user && !userSynced) {
+        await getOrCreateUser({
+          clerkId: user.id,
+          email: user.primaryEmailAddress?.emailAddress ?? "",
+          name: user.fullName ?? user.firstName ?? "Anonymous",
+        });
+        setUserSynced(true);
+      }
     }
-  }, [isLoaded, user, getOrCreateUser]);
+    syncUser();
+  }, [isLoaded, user, userSynced, getOrCreateUser]);
 
-  if (!isLoaded || currentUser === undefined || currentUser === null) {
+  if (!isLoaded || currentUser === undefined) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="text-gray-500 text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  if (currentUser === null) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="text-gray-500 text-center">Setting up your account...</div>
       </div>
     );
   }
