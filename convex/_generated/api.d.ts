@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as recommendations from "../recommendations.js";
+import type * as seed from "../seed.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   recommendations: typeof recommendations;
+  seed: typeof seed;
   users: typeof users;
 }>;
 

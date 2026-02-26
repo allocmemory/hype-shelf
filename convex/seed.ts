@@ -1,5 +1,4 @@
 import { mutation } from "./_generated/server";
-import { v } from "convex/values";
 
 const ADMIN_CLERK_ID = "user_3ADyj6vIoqgfkfPmRqGQOjAtIWs";
 const USER_CLERK_ID = "user_3ADykAFo2xuqsGqRFGHMJ4eTTNb";
@@ -50,7 +49,6 @@ const SEED_RECOMMENDATIONS = [
 export const seedData = mutation({
   args: {},
   handler: async (ctx) => {
-    // Create or get admin user
     let adminUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", ADMIN_CLERK_ID))
@@ -65,12 +63,10 @@ export const seedData = mutation({
       });
       adminUser = await ctx.db.get(adminId);
     } else if (adminUser.role !== "admin") {
-      // Ensure admin has admin role
       await ctx.db.patch(adminUser._id, { role: "admin" });
       adminUser = await ctx.db.get(adminUser._id);
     }
 
-    // Create or get regular user
     let regularUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", USER_CLERK_ID))
@@ -90,11 +86,9 @@ export const seedData = mutation({
       throw new Error("Failed to create users");
     }
 
-    // Get existing recommendations to check for duplicates
     const existingRecs = await ctx.db.query("recommendations").collect();
     const existingTitles = new Set(existingRecs.map((r) => r.title));
 
-    // Clear any existing staff pick first
     const currentStaffPick = await ctx.db
       .query("recommendations")
       .withIndex("by_isStaffPick", (q) => q.eq("isStaffPick", true))
@@ -104,13 +98,11 @@ export const seedData = mutation({
       await ctx.db.patch(currentStaffPick._id, { isStaffPick: false });
     }
 
-    // Insert seed recommendations
     const results = [];
     for (const rec of SEED_RECOMMENDATIONS) {
       if (existingTitles.has(rec.title)) {
         results.push({ title: rec.title, status: "skipped (exists)" });
 
-        // If this should be staff pick, find it and set it
         if (rec.isStaffPick) {
           const existingRec = existingRecs.find((r) => r.title === rec.title);
           if (existingRec && !existingRec.isStaffPick) {

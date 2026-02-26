@@ -96,7 +96,6 @@ export const addRecommendation = mutation({
   handler: async (ctx, args) => {
     const user = await getAuthenticatedUser(ctx);
 
-    // Server-side length validation
     if (args.title.length === 0 || args.title.length > MAX_TITLE_LENGTH) {
       throw new ConvexError(`Title must be 1-${MAX_TITLE_LENGTH} characters`);
     }
